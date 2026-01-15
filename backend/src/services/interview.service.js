@@ -15,21 +15,25 @@ import { calculateFinalScore } from "../utils/scoring.js";
 // 🚀 Start Interview Service
 //
 export const startInterviewService = async ({ userId, config }) => {
+  console.log("inside interview service chlo aage");
+  
 
   // 1️⃣ Create session
   const session = await InterviewSession.create({
     userId,
-    mode: "practice",
     config,
     status: "in_progress",
     startedAt: new Date()
   });
+  console.log("session to ban gya h ab question generate krna h");
 
   // 2️⃣ Generate first question
  const questionText = await generateQuestionAI({
   topic: config.topic,
   difficulty: config.difficulty,
 });
+  console.log("question text bnva liyta ab phate gi uski");
+
 
 
   // 3️⃣ Save first question
@@ -57,6 +61,9 @@ export const submitAnswerService = async ({
   answerText,
   timeTaken
 }) => {
+  console.log("Submitting answer service called for session:", sessionId);
+
+  // 🔍 Fetch session
 
   const session = await InterviewSession.findById(sessionId);
 
@@ -67,18 +74,23 @@ export const submitAnswerService = async ({
   }
 
   // 1️⃣ Find QA
+
+  console.log("Finding QA for question index:", questionIndex);
+    
   const qa = await InterviewQA.findOne({
     sessionId,
     questionIndex
   });
 
   if (!qa) throw new Error("Question not found");
-
+  console.log("QA found:", qa.questionText);
   // 2️⃣ Evaluate answer
+  console.log("Evaluating answer...");
   const evaluation = await evaluateAnswerAI({
   question: qa.questionText,
   answer: answerText
 });
+  console.log("Answer evaluated:", evaluation);
 
 
   // 3️⃣ Update QA
@@ -97,6 +109,7 @@ if (nextIndex >= session.config.questionCount) {
   const evaluations = allQAs
     .filter(q => q.evaluation)
     .map(q => q.evaluation);
+    console.log("Calculating final score with evaluations:", evaluations);
 
   const { finalScore, avg } = calculateFinalScore(evaluations);
 
@@ -104,6 +117,8 @@ if (nextIndex >= session.config.questionCount) {
   session.status = "completed";
   session.completedAt = new Date();
   session.finalScore = finalScore;
+
+  console.log("Final score calculated:", finalScore);
   await session.save();
 
   // 📊 Save detailed metrics
@@ -120,12 +135,13 @@ if (nextIndex >= session.config.questionCount) {
     weaknesses: [],
     aiSummary: "Auto-generated evaluation"
   });
+  console.log("Evaluation metrics saved for session:", sessionId);
 
   return {
     status: "completed",
     finalScore
   };
-}
+};
 
 
   // 5️⃣ Generate next question

@@ -11,6 +11,8 @@ import { generateToken } from "../utils/token.js";
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    // console.log(req.body);
+    
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -18,11 +20,15 @@ export const register = async (req, res) => {
       });
     }
 
+    // console.log("before user going");
+    
     const user = await registerUserService({
       name,
       email,
       password
     });
+    // console.log("user-->",user);
+    
 
     const token = generateToken(user._id);
 
@@ -70,9 +76,14 @@ export const login = async (req, res) => {
       }
     });
 
-  } catch (error) {
-    res.status(401).json({
-      message: error.message
-    });
+  }catch (error) {
+  console.error("FULL ERROR STACK:", error);
+  
+  res.status(400).json({
+    message: error.message,
+    stack: error.stack
+  });
+
+
   }
 };

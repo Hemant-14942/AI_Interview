@@ -8,7 +8,6 @@ const router = express.Router();
 // 🎤 Upload audio → transcript
 router.post(
   "/transcribe",
-  protect,
   upload.single("audio"),
   speechToText
 );

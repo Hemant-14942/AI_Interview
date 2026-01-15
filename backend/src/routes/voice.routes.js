@@ -5,6 +5,6 @@ import { protect } from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 // 🔊 Text → Speech
-router.post("/speak", protect, speak);
+router.post("/speak", speak);
 
 export default router;

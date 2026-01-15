@@ -9,13 +9,15 @@ import { resumeInterviewService , getInterviewResultService, getInterviewHistory
 export const startInterview = async (req, res) => {
   try {
     const userId = req.user._id;
+    console.log("to ajj iss chutiya ka interview h->",userId);
+    
 
     const {
       topic,
       difficulty,
       questionCount,
       timePerQuestion,
-      interviewMode,
+      interviewMode,  
       personality
     } = req.body;
 
@@ -24,13 +26,15 @@ export const startInterview = async (req, res) => {
       !difficulty ||
       !questionCount ||
       !timePerQuestion ||
-      !interviewMode
+      !interviewMode ||
+      !personality
     ) {
       return res.status(400).json({
         message: "Missing required fields"
       });
     }
-
+    console.log("sbb fields to bhari isne");
+    
     const result = await startInterviewService({
       userId,
       config: {
@@ -42,7 +46,8 @@ export const startInterview = async (req, res) => {
         personality
       }
     });
-
+    console.log("interview services k baad m to aa gya hu huuu");
+    
     res.status(201).json(result);
 
   } catch (error) {
@@ -58,6 +63,7 @@ export const startInterview = async (req, res) => {
 export const submitAnswer = async (req, res) => {
   try {
     const { sessionId } = req.params;
+    console.log("Submitting answer for session:", sessionId);
     const { questionIndex, answerText, timeTaken } = req.body;
 
     if (!answerText) {
@@ -65,6 +71,7 @@ export const submitAnswer = async (req, res) => {
         message: "Answer is required"
       });
     }
+    console.log("Answer received:", answerText);
 
     const result = await submitAnswerService({
       sessionId,
@@ -72,6 +79,7 @@ export const submitAnswer = async (req, res) => {
       answerText,
       timeTaken
     });
+    console.log("Answer submitted successfully for session:", sessionId);
 
     res.json(result);
 

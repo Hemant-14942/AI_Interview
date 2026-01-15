@@ -1,7 +1,19 @@
-import openai from "../utils/openai.js";
+import OpenAI from "openai";
+
+// ✅ Azure OpenAI Client
+const client = new OpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
+  defaultQuery: {
+    "api-version": process.env.AZURE_OPENAI_API_VERSION
+  },
+  defaultHeaders: {
+    "api-key": process.env.AZURE_OPENAI_API_KEY
+  }
+});
 
 //
-// 🤖 Generate Interview Question using AI
+// 🤖 Generate interview question
 //
 export const generateQuestionAI = async ({
   topic,
@@ -23,8 +35,10 @@ ${previousQuestions.join("\n")}
 Generate next interview question only.
 `;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  console.log("🧠 Calling Azure OpenAI for question generation...");
+
+  const response = await client.chat.completions.create({
+    model: process.env.AZURE_OPENAI_DEPLOYMENT, // deployment name
     temperature: 0.7,
     messages: [
       { role: "system", content: systemPrompt },
@@ -34,8 +48,13 @@ Generate next interview question only.
 
   const question = response.choices[0].message.content.trim();
 
+  console.log("✅ Azure OpenAI Question Generated:", question);
+
   return question;
 };
+
+
+
 //
 // 📊 Evaluate Answer using AI
 //
@@ -65,8 +84,10 @@ Candidate Answer:
 ${answer}
 `;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  console.log("🧠 Calling Azure OpenAI for answer evaluation...");
+
+  const response = await client.chat.completions.create({
+    model: process.env.AZURE_OPENAI_DEPLOYMENT,
     temperature: 0.2,
     messages: [
       { role: "system", content: systemPrompt },
@@ -79,8 +100,9 @@ ${answer}
   try {
     return JSON.parse(raw);
   } catch (err) {
-    console.error("AI JSON parse failed:", raw);
+    console.error("❌ AI JSON parse failed:", raw);
     throw new Error("Invalid AI evaluation format");
   }
 };
+
 

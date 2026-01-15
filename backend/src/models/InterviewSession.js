@@ -10,7 +10,7 @@ const interviewSessionSchema = new mongoose.Schema(
 
     mode: {
       type: String,
-      enum: ["practice"],
+      enum: ["practice", "interview"],
       default: "practice"
     },
 

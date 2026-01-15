@@ -6,16 +6,19 @@ import { resumeInterview ,  getInterviewResult, getInterviewHistory} from "../co
 
 const router = express.Router();
 
+// Protect all routes
+router.use(protect);
+
 // 🚀 Start interview
-router.post("/start", protect, startInterview);
+router.post("/start", startInterview);
 // Submit answer
-router.post("/:sessionId/answer", protect, submitAnswer);
+router.post("/:sessionId/answer", submitAnswer);
 // Resume interview
-router.get("/:sessionId/resume", protect, resumeInterview);
+router.get("/:sessionId/resume", resumeInterview);
 // Get result
-router.get("/:sessionId/result", protect, getInterviewResult);
+router.get("/:sessionId/result", getInterviewResult);
 
 // History
-router.get("/history/list", protect, getInterviewHistory);
+router.get("/history/list", getInterviewHistory);
 
 export default router;
